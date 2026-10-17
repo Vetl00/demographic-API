@@ -1,0 +1,101 @@
+geo,TIME_PERIOD,age_category,OBS_VALUE
+Czechia,2013,Adults 30-64,606
+Czechia,2013,Children 0-14,320
+Czechia,2013,Seniors 65+,-170
+Czechia,2013,TOTAL,8460
+Czechia,2013,Youth 15-29,4926
+Czechia,2014,Adults 30-64,376
+Czechia,2014,Children 0-14,442
+Czechia,2014,Seniors 65+,-1050
+Czechia,2014,TOTAL,2858
+Czechia,2014,Youth 15-29,-188
+Czechia,2015,Adults 30-64,508
+Czechia,2015,Children 0-14,678
+Czechia,2015,Seniors 65+,-1060
+Czechia,2015,TOTAL,7836
+Czechia,2015,Youth 15-29,3898
+Czechia,2016,Adults 30-64,15036
+Czechia,2016,Children 0-14,1552
+Czechia,2016,Seniors 65+,-1738
+Czechia,2016,TOTAL,50438
+Czechia,2016,Youth 15-29,23338
+Czechia,2017,Adults 30-64,19074
+Czechia,2017,Children 0-14,922
+Czechia,2017,Seniors 65+,-664
+Czechia,2017,TOTAL,49062
+Czechia,2017,Youth 15-29,24230
+Czechia,2018,Adults 30-64,38840
+Czechia,2018,Children 0-14,1360
+Czechia,2018,Seniors 65+,-320
+Czechia,2018,TOTAL,78336
+Czechia,2018,Youth 15-29,31608
+Czechia,2019,Adults 30-64,17910
+Czechia,2019,Children 0-14,1230
+Czechia,2019,Seniors 65+,-7786
+Czechia,2019,TOTAL,56180
+Czechia,2019,Youth 15-29,30332
+Czechia,2020,Adults 30-64,23148
+Czechia,2020,Children 0-14,882
+Czechia,2020,Seniors 65+,-1618
+Czechia,2020,TOTAL,54482
+Czechia,2020,Youth 15-29,25970
+Czechia,2021,Adults 30-64,50096
+Czechia,2021,Children 0-14,1898
+Czechia,2021,Seniors 65+,814
+Czechia,2021,TOTAL,101460
+Czechia,2021,Youth 15-29,41548
+Czechia,2022,Adults 30-64,292100
+Czechia,2022,Children 0-14,54760
+Czechia,2022,Seniors 65+,21840
+Czechia,2022,TOTAL,631330
+Czechia,2022,Youth 15-29,175906
+Sweden,2013,Adults 30-64,39946
+Sweden,2013,Children 0-14,13300
+Sweden,2013,Seniors 65+,1216
+Sweden,2013,TOTAL,130260
+Sweden,2013,Youth 15-29,52926
+Sweden,2014,Adults 30-64,50390
+Sweden,2014,Children 0-14,12286
+Sweden,2014,Seniors 65+,926
+Sweden,2014,TOTAL,151458
+Sweden,2014,Youth 15-29,62862
+Sweden,2015,Adults 30-64,48426
+Sweden,2015,Children 0-14,13674
+Sweden,2015,Seniors 65+,674
+Sweden,2015,TOTAL,156820
+Sweden,2015,Youth 15-29,64768
+Sweden,2016,Adults 30-64,77412
+Sweden,2016,Children 0-14,17424
+Sweden,2016,Seniors 65+,1560
+Sweden,2016,TOTAL,234254
+Sweden,2016,Youth 15-29,96820
+Sweden,2017,Adults 30-64,64036
+Sweden,2017,Children 0-14,16078
+Sweden,2017,Seniors 65+,688
+Sweden,2017,TOTAL,197738
+Sweden,2017,Youth 15-29,80482
+Sweden,2018,Adults 30-64,58908
+Sweden,2018,Children 0-14,14682
+Sweden,2018,Seniors 65+,372
+Sweden,2018,TOTAL,171242
+Sweden,2018,Youth 15-29,67252
+Sweden,2019,Adults 30-64,45896
+Sweden,2019,Children 0-14,10130
+Sweden,2019,Seniors 65+,-374
+Sweden,2019,TOTAL,136174
+Sweden,2019,Youth 15-29,58842
+Sweden,2020,Adults 30-64,21366
+Sweden,2020,Children 0-14,4722
+Sweden,2020,Seniors 65+,-478
+Sweden,2020,TOTAL,67162
+Sweden,2020,Youth 15-29,32420
+Sweden,2021,Adults 30-64,16402
+Sweden,2021,Children 0-14,2046
+Sweden,2021,Seniors 65+,-185
+Sweden,2021,TOTAL,84694
+Sweden,2021,Youth 15-29,18911
+Sweden,2022,Adults 30-64,45230
+Sweden,2022,Children 0-14,3256
+Sweden,2022,Seniors 65+,1110
+Sweden,2022,TOTAL,103688
+Sweden,2022,Youth 15-29,43854
