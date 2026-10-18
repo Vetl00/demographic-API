@@ -3,7 +3,7 @@ import os
 
 from database import get_db, init_db
 from data_loader import load_csv_data
-from models import DemographicRecord, Region
+from models import Country, DemographicRecord, Region
 
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -16,6 +16,60 @@ FILES_TO_PROCESS = {
     "aging.csv": ("aging", "region_std", "T:Total"),
 }
 
+CZECH_REGIONS = frozenset(
+    {
+        "JIHOMORAVSKÝ",
+        "JIHOČESKÝ",
+        "KARLOVARSKÝ",
+        "KRAJ VYSOČINA",
+        "KRÁLOVÉHRADECKÝ",
+        "LIBERECKÝ",
+        "MORAVSKOSLEZSKÝ",
+        "OLOMOUCKÝ",
+        "PARDUBICKÝ",
+        "PLZEŇSKÝ",
+        "PRAGUE",
+        "STŘEDOČESKÝ",
+        "ÚSTECKÝ",
+        "ZLÍNSKÝ",
+    }
+)
+
+SWEDISH_REGIONS = frozenset(
+    {
+        "BLEKINGE",
+        "DALARNA",
+        "GOTLAND",
+        "GÄVLEBORG",
+        "HALLAND",
+        "JÄMTLAND",
+        "JÖNKÖPING",
+        "KALMAR",
+        "KRONOBERG",
+        "NORRBOTTEN",
+        "OREBRO",
+        "SKÅNE",
+        "STOCKHOLM",
+        "SÖDERMANLAND",
+        "UPPSALA",
+        "VÄRMLAND",
+        "VÄSTERBOTTEN",
+        "VÄSTERNORRLAND",
+        "VÄSTMANLAND",
+        "VÄSTRA GÖTALAND",
+        "ÖSTERGÖTLAND",
+    }
+)
+
+
+def get_country(region_name):
+    normalized_name = region_name.strip().upper()
+    if normalized_name in CZECH_REGIONS or normalized_name == "CZECHIA":
+        return "CZ", "Czechia"
+    if normalized_name in SWEDISH_REGIONS or normalized_name == "SWEDEN":
+        return "SE", "Sweden"
+    raise ValueError(f"Unknown country for region: {region_name}")
+
 
 def seed_database():
     """Populate an empty database from the demographic CSV files."""
@@ -25,7 +79,11 @@ def seed_database():
     database = next(database_generator)
 
     try:
-        if database.query(Region).first() or database.query(DemographicRecord).first():
+        if (
+            database.query(Country).first()
+            or database.query(Region).first()
+            or database.query(DemographicRecord).first()
+        ):
             logging.info("Database is not empty. Seeding skipped.")
             return
 
@@ -41,6 +99,7 @@ def seed_database():
                 filepath=filename,
                 indicator_type=indicator,
                 region_col=region_col,
+                country_resolver=get_country,
                 year_col="TIME_PERIOD",
                 value_col=value_col,
                 age_col="age_category",

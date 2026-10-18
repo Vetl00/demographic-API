@@ -11,6 +11,9 @@ class Region(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), unique=True, nullable=False)
+    country_id = Column(Integer, ForeignKey("countries.id"), nullable=False)
+
+    country = relationship("Country", back_populates="regions")
 
     records = relationship(
         "DemographicRecord",
@@ -20,6 +23,18 @@ class Region(Base):
 
     def __repr__(self):
         return f"<Region(name='{self.name}')>"
+
+
+class Country(Base):
+    """Model representing a country in the region catalogue."""
+
+    __tablename__ = "countries"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    code = Column(String(2), unique=True, nullable=False)
+    name = Column(String(100), unique=True, nullable=False)
+
+    regions = relationship("Region", back_populates="country")
 
 
 class DemographicRecord(Base):

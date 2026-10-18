@@ -7,7 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import DemographicRecord, Region
+from models import Country, DemographicRecord, Region
 
 
 app = FastAPI(
@@ -17,11 +17,20 @@ app = FastAPI(
 )
 
 
+class CountryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    code: str
+    name: str
+
+
 class RegionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     name: str
+    country: CountryResponse
 
 
 class DemographicRecordResponse(BaseModel):
@@ -62,24 +71,6 @@ class RegionSummaryResponse(BaseModel):
     years: list[int]
     indicators: list[str]
     records_count: int = Field(ge=0)
-
-
-class GeoJSONGeometry(BaseModel):
-    type: str = Field(
-        pattern="^(Point|MultiPoint|LineString|MultiLineString|Polygon|MultiPolygon)$"
-    )
-    coordinates: list
-
-
-class GeoJSONFeatureProperties(BaseModel):
-    region_id: int
-    region_name: str
-
-
-class GeoJSONFeature(BaseModel):
-    type: str = Field(default="Feature", pattern="^Feature$")
-    properties: GeoJSONFeatureProperties
-    geometry: GeoJSONGeometry
 
 
 def get_region_or_404(database: Session, region_id: int) -> Region:
@@ -135,19 +126,28 @@ def list_years(
     return YearsResponse(years=[year for (year,) in years])
 
 
+@app.get("/countries", response_model=list[CountryResponse])
+def list_countries(
+    database: Annotated[Session, Depends(get_db)],
+) -> list[Country]:
+    return database.query(Country).order_by(Country.name).all()
+
+
 @app.get("/regions", response_model=list[RegionResponse])
 def list_regions(
     database: Annotated[Session, Depends(get_db)],
+    country_code: Annotated[
+        str | None, Query(min_length=2, max_length=2, pattern="^[A-Z]{2}$")
+    ] = None,
     limit: Annotated[int, Query(ge=1, le=1000)] = 100,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> list[Region]:
-    return (
-        database.query(Region)
-        .order_by(Region.name)
-        .offset(offset)
-        .limit(limit)
-        .all()
-    )
+    regions_query = database.query(Region)
+    if country_code is not None:
+        regions_query = regions_query.join(Region.country).filter(
+            Country.code == country_code
+        )
+    return regions_query.order_by(Region.name).offset(offset).limit(limit).all()
 
 
 @app.get(
@@ -233,13 +233,3 @@ def get_region_summary(
     )
 
 
-@app.get("/regions/{region_id}/geometry", response_model=GeoJSONFeature)
-def get_geometry(
-    region_id: int,
-    database: Annotated[Session, Depends(get_db)],
-) -> GeoJSONFeature:
-    get_region_or_404(database, region_id)
-    raise HTTPException(
-        status_code=404,
-        detail="Geometry not found for this region",
-    )
