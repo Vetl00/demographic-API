@@ -2,6 +2,8 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy import func, text
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from database import get_db
@@ -37,6 +39,29 @@ class DemographicsResponse(BaseModel):
     items: list[DemographicRecordResponse]
     total: int = Field(ge=0)
     year: int | None = None
+    indicator_type: str | None = None
+    age_category: str | None = None
+
+
+class HealthResponse(BaseModel):
+    status: str
+    database: str
+
+
+class IndicatorResponse(BaseModel):
+    code: str
+    record_count: int = Field(ge=0)
+
+
+class YearsResponse(BaseModel):
+    years: list[int]
+
+
+class RegionSummaryResponse(BaseModel):
+    region: RegionResponse
+    years: list[int]
+    indicators: list[str]
+    records_count: int = Field(ge=0)
 
 
 class GeoJSONGeometry(BaseModel):
@@ -64,6 +89,52 @@ def get_region_or_404(database: Session, region_id: int) -> Region:
     return region
 
 
+@app.get("/health", response_model=HealthResponse)
+def health_check(
+    database: Annotated[Session, Depends(get_db)],
+) -> HealthResponse:
+    try:
+        database.execute(text("SELECT 1"))
+    except SQLAlchemyError as error:
+        raise HTTPException(
+            status_code=503,
+            detail="Database is unavailable",
+        ) from error
+    return HealthResponse(status="ok", database="ok")
+
+
+@app.get("/indicators", response_model=list[IndicatorResponse])
+def list_indicators(
+    database: Annotated[Session, Depends(get_db)],
+) -> list[IndicatorResponse]:
+    indicators = (
+        database.query(
+            DemographicRecord.indicator_type,
+            func.count(DemographicRecord.id).label("record_count"),
+        )
+        .group_by(DemographicRecord.indicator_type)
+        .order_by(DemographicRecord.indicator_type)
+        .all()
+    )
+    return [
+        IndicatorResponse(code=code, record_count=record_count)
+        for code, record_count in indicators
+    ]
+
+
+@app.get("/years", response_model=YearsResponse)
+def list_years(
+    database: Annotated[Session, Depends(get_db)],
+) -> YearsResponse:
+    years = (
+        database.query(DemographicRecord.year)
+        .distinct()
+        .order_by(DemographicRecord.year)
+        .all()
+    )
+    return YearsResponse(years=[year for (year,) in years])
+
+
 @app.get("/regions", response_model=list[RegionResponse])
 def list_regions(
     database: Annotated[Session, Depends(get_db)],
@@ -87,6 +158,8 @@ def get_demographics(
     region_id: int,
     database: Annotated[Session, Depends(get_db)],
     year: Annotated[int | None, Query(ge=1900, le=2100)] = None,
+    indicator_type: Annotated[str | None, Query(min_length=1, max_length=50)] = None,
+    age_category: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
     limit: Annotated[int, Query(ge=1, le=1000)] = 100,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> DemographicsResponse:
@@ -96,6 +169,14 @@ def get_demographics(
     )
     if year is not None:
         records_query = records_query.filter(DemographicRecord.year == year)
+    if indicator_type is not None:
+        records_query = records_query.filter(
+            DemographicRecord.indicator_type == indicator_type
+        )
+    if age_category is not None:
+        records_query = records_query.filter(
+            DemographicRecord.age_category == age_category
+        )
 
     total = records_query.count()
     records = (
@@ -113,6 +194,42 @@ def get_demographics(
         items=[DemographicRecordResponse.model_validate(record) for record in records],
         total=total,
         year=year,
+        indicator_type=indicator_type,
+        age_category=age_category,
+    )
+
+
+@app.get(
+    "/regions/{region_id}/summary",
+    response_model=RegionSummaryResponse,
+)
+def get_region_summary(
+    region_id: int,
+    database: Annotated[Session, Depends(get_db)],
+) -> RegionSummaryResponse:
+    region = get_region_or_404(database, region_id)
+    years = (
+        database.query(DemographicRecord.year)
+        .filter(DemographicRecord.region_id == region_id)
+        .distinct()
+        .order_by(DemographicRecord.year)
+        .all()
+    )
+    indicators = (
+        database.query(DemographicRecord.indicator_type)
+        .filter(DemographicRecord.region_id == region_id)
+        .distinct()
+        .order_by(DemographicRecord.indicator_type)
+        .all()
+    )
+    records_count = database.query(DemographicRecord).filter(
+        DemographicRecord.region_id == region_id
+    ).count()
+    return RegionSummaryResponse(
+        region=RegionResponse.model_validate(region),
+        years=[year for (year,) in years],
+        indicators=[indicator for (indicator,) in indicators],
+        records_count=records_count,
     )
 
 
