@@ -16,7 +16,9 @@ def load_csv_data(
     age_col="age_category",
     commit=True,
 ):
+
     """Read a CSV file and load its data into the database."""
+
     if not os.path.exists(filepath):
         logging.warning(f"File {filepath} not found. Skipping.")
         return
@@ -64,6 +66,7 @@ def load_csv_data(
                 session.flush()
 
             try:
+                # Parse year, age category, and value, handling potential conversion errors
                 year = int(row[year_col])
                 age_category = row[age_col].strip()
                 value_str = row[value_col].strip()

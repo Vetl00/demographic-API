@@ -92,7 +92,7 @@ def seed_database():
             raise FileNotFoundError(
                 "Required CSV files not found: " + ", ".join(missing_files)
             )
-
+		# Load data from each CSV file
         for filename, (indicator, region_col, value_col) in FILES_TO_PROCESS.items():
             load_csv_data(
                 session=database,
@@ -105,7 +105,7 @@ def seed_database():
                 age_col="age_category",
                 commit=False,
             )
-
+		# Commit all changes to the database after processing all files
         database.commit()
         logging.info("Database seeded successfully.")
     except Exception:
