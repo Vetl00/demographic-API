@@ -6,8 +6,8 @@ from sqlalchemy import func, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from database import get_db
-from models import Country, DemographicRecord, Region
+from .database import get_db
+from .models import Country, DemographicRecord, Region
 
 
 app = FastAPI(

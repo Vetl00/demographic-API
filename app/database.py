@@ -1,4 +1,5 @@
 import logging
+import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
@@ -7,11 +8,13 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 Base = declarative_base()
 
 
-def get_engine(db_url="sqlite:///demographics.db"):
+def get_engine(db_url=None):
     """
     Creates and returns a SQLAlchemy engine instance.
     For PostgreSQL, use: 'postgresql://user:password@localhost/dbname'
     """
+    if db_url is None:
+        db_url = os.getenv("DATABASE_URL", "sqlite:///demographics.db")
     return create_engine(db_url, echo=False)
 
 

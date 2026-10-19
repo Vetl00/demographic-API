@@ -1,19 +1,19 @@
 import logging
 import os
 
-from database import get_db, init_db
-from data_loader import load_csv_data
-from models import Country, DemographicRecord, Region
+from .database import get_db, init_db
+from .data_loader import load_csv_data
+from .models import Country, DemographicRecord, Region
 
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 
 FILES_TO_PROCESS = {
-    "fert.csv": ("fertility", "region_std", "OBS_VALUE"),
-    "migration.csv": ("migration", "geo", "OBS_VALUE"),
-    "mort.csv": ("mortality", "region_std", "T:Total"),
-    "aging.csv": ("aging", "region_std", "T:Total"),
+    os.path.join("data", "fert.csv"): ("fertility", "region_std", "OBS_VALUE"),
+    os.path.join("data", "migration.csv"): ("migration", "geo", "OBS_VALUE"),
+    os.path.join("data", "mort.csv"): ("mortality", "region_std", "T:Total"),
+    os.path.join("data", "aging.csv"): ("aging", "region_std", "T:Total"),
 }
 
 CZECH_REGIONS = frozenset(

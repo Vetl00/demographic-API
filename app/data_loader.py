@@ -2,7 +2,7 @@ import csv
 import logging
 import os
 
-from models import Country, DemographicRecord, Region
+from .models import Country, DemographicRecord, Region
 
 
 def load_csv_data(
